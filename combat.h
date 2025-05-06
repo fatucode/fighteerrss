@@ -1,10 +1,10 @@
 #ifndef COMBAT_H
 #define COMBAT_H
+// Attaquant : effectue deux attaques successives sur la même cible
+void double_attaque(Ninja *attaquant, Ninja *cible);
 
-#include "personnage.h"
+// Défenseur : applique un effet de bouclier à tous les membres de l'équipe (réduction des dégâts pendant 1 tour)
+void bouclier_equipe(Ninja equipe[], int taille);
 
-void attaquer(Ninja* attaquant, Ninja* cible);
-void soigner(Ninja* guerisseur, Ninja* cible);
-void tourDeCombat(Ninja* equipe1, int taille1, Ninja* equipe2, int taille2);
-
-#endif
+// Guérisseur : soigne un allié ou lui-même avec un soin renforcé
+void boisson_magique(Ninja *soigneur, Ninja *cible);
