@@ -3,9 +3,30 @@
 #include <string.h>
 #include "personnage.h"
 
-// Crée un personnage selon son type : attaquant, défenseur ou guérisseur
-Ninja creerPersonnage(const char *nom, const char *type) {
-    Ninja p;
+typedef struct {
+    char nom[50];               // Nom de la technique spéciale
+    int type;                   // 0 = aucune, 1 = double attaque, 2 = bouclier, 3 = boisson magique
+    int duree;                  // Nombre de tours pendant lesquels l’effet est actif
+    int tours_recharge;         // 0 = non, 1 = oui
+} TechniqueSpeciale;
+
+typedef struct {
+    char nom[50];
+    char type[20];              // type doit être un tableau de char, pas un int
+    int PV_max;
+    int PV;
+    int attaque;
+    int defense;
+    int agilite;
+    int vitesse;
+    int bouclier_actif;
+    TechniqueSpeciale competence;
+    int nb_techniques;
+    int nb_effets;
+} Personnage;
+
+Personnage creerPersonnage(const char *nom, const char *type) {
+    Personnage p;
     strcpy(p.nom, nom);
     strcpy(p.type, type);
     p.PV_max = 100;
@@ -33,16 +54,31 @@ Ninja creerPersonnage(const char *nom, const char *type) {
         p.agilite = 10;
     }
 
-    p.PV = p.PV_max;
+    if (strcmp(p.type, "attaquant") == 0) {
+        strcpy(p.competence.nom, "Double Attaque");
+        p.competence.type = 1;
+        p.competence.duree = 0;
+        p.competence.tours_recharge = 0;
+    } else if (strcmp(p.type, "défenseur") == 0) {
+        strcpy(p.competence.nom, "Bouclier d'équipe");
+        p.competence.type = 2;
+        p.competence.duree = 1;
+        p.competence.tours_recharge = 0;
+    } else if (strcmp(p.type, "guérisseur") == 0) {
+        strcpy(p.competence.nom, "Boisson magique");
+        p.competence.type = 3;
+        p.competence.duree = 0;
+        p.competence.tours_recharge = 0;
+    }
 
-    // Initialisation vide des techniques et effets spéciaux
+    p.PV = p.PV_max;
     p.nb_techniques = 0;
     p.nb_effets = 0;
 
     return p;
 }
-// Permet à l’utilisateur de saisir un personnage
-Ninja saisirPersonnage() {
+
+Personnage saisirPersonnage() {
     char nom[50];
     char type[20];
 
@@ -55,9 +91,7 @@ Ninja saisirPersonnage() {
     return creerPersonnage(nom, type);
 }
 
-
-// Affiche les informations d’un personnage
-void afficherPersonnage(Ninja p) {
+void afficherPersonnage(Personnage p) {
     printf("Nom : %s\n", p.nom);
     printf("Type : %s\n", p.type);
     printf("PV : %d / %d\n", p.PV, p.PV_max);
@@ -66,10 +100,4 @@ void afficherPersonnage(Ninja p) {
     printf("Vitesse : %d\n", p.vitesse);
     printf("Agilité : %d\n", p.agilite);
 }
-
-// Vérifie si le personnage est encore en vie
-int est_vivant(Ninja p) {
-    return p.PV > 0;
-}
-
 
