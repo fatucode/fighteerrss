@@ -16,8 +16,23 @@ void attaquer(Personnage *attaquant, Personnage *cible) {
 }
 
 void soigner(Personnage *guerisseur, Personnage *cible) {
+    if (guerisseur == NULL || cible == NULL) {
+        printf("Erreur : guérisseur ou cible invalide.\n");
+        return;
+    }
+
     if (strcmp(guerisseur->type, "guerisseur") != 0) {
-        printf("%s n'est pas un guerisseur !\n", guerisseur->nom);
+        printf("%s n'est pas un guérisseur !\n", guerisseur->nom);
+        return;
+    }
+
+    if (cible->PV <= 0) {
+        printf("%s est mort et ne peut pas être soigné.\n", cible->nom);
+        return;
+    }
+
+    if (guerisseur == cible) {
+        printf("%s ne peut pas se soigner lui-même.\n", guerisseur->nom);
         return;
     }
 
@@ -27,6 +42,7 @@ void soigner(Personnage *guerisseur, Personnage *cible) {
 
     printf("%s soigne %s pour %d PV !\n", guerisseur->nom, cible->nom, soin);
 }
+
 
 void double_attaque(Personnage *attaquant, Personnage *cible) {
     int degats1 = attaquant->attaque - (cible->defense / 2);
@@ -69,31 +85,30 @@ void boisson_magique(Personnage* soigneur, Personnage* cible) {
 }
 void utiliser_competence(Personnage *perso, Personnage equipe[], int taille, Personnage *cible) {
     if (perso->competence.tours_recharge > 0) {
-        printf("%s doit encore attendre %d tours!\n",
-              perso->nom, perso->competence.tours_recharge);
+        printf("%s doit encore attendre %d tours!\n", perso->nom, perso->competence.tours_recharge);
         return;
     }
 
+    // Exécution de la compétence spéciale en fonction du type
     switch(perso->competence.type) {
         case 1: // Double attaque
             double_attaque(perso, cible);
             break;
-
         case 2: // Bouclier
             bouclier_equipe(perso, equipe, taille);
-            // On active le bouclier pour la dur�e sp�cifi�e
+            // On active le bouclier pour la durée spécifiée
             for (int i = 0; i < taille; i++) {
                 if (&equipe[i] != perso) {
                     equipe[i].bouclier_actif = perso->competence.duree;
                 }
             }
             break;
-
         case 3: // Soin
             boisson_magique(perso, cible);
             break;
     }
 
-    perso->competence.tours_recharge = 2; // Recharge fix�e � 2 tours
+    // Mise en place de la recharge de la compétence
+    perso->competence.tours_recharge = 2; // Recharge fixée à 2 tours
 }
 
