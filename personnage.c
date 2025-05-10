@@ -94,4 +94,3 @@ void afficherPersonnage(Personnage p) {
 }
 
 
-v
