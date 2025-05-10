@@ -1,20 +1,18 @@
-#include "personnage.h"
-
-
+#include "combat.h"
+#include "jeu.h"
+#include <stdio.h>
 void attaquer(Personnage *attaquant, Personnage *cible) {
-    int degats = attaquant->attaque - cible->defense;
+    int degats = (attaquant->attaque * (10 + attaquant->agilite)) / (10 + cible->defense);
+
     if (cible->bouclier_actif) {
-        printf("%s est protege par un bouclier ! Degats reduits.\n", cible->nom);
         degats /= 2;
-        cible->bouclier_actif = 0;
+        printf("Bouclier activ� ! ");
     }
 
-    if (degats < 1) degats = 1;
-
+    degats = (degats < 1) ? 1 : degats;
     cible->PV -= degats;
-    if (cible->PV < 0) cible->PV = 0;
 
-    printf("%s attaque %s et inflige %d degats !\n", attaquant->nom, cible->nom, degats);
+    printf("%s inflige %d d�g�ts � %s !\n", attaquant->nom, degats, cible->nom);
 }
 
 void soigner(Personnage *guerisseur, Personnage *cible) {
@@ -53,22 +51,49 @@ void bouclier_equipe(Personnage *defenseur, Personnage equipe[], int taille) {
         }
     }
 }
-
-void utiliser_competence(Personnage *perso, Personnage equipe[], int taille, Personnage *cible) {
-    if (perso->competence.tours_recharge > 0) {
-        printf("Competence en recharge (%d tours restants)\n", perso->competence.tours_recharge);
+void boisson_magique(Personnage* soigneur, Personnage* cible) {
+    if (strcmp(soigneur->type, "guerisseur") != 0) {
+        printf("%s n'est pas un guerisseur !\n", soigneur->nom);
         return;
     }
 
-    if (strcmp(perso->type, "attaquant") == 0) {
-        double_attaque(perso, cible);
-    } 
-    else if (strcmp(perso->type, "defenseur") == 0) {
-        bouclier_equipe(perso, equipe, taille);
-    } 
-    else if (strcmp(perso->type, "guerisseur") == 0) {
-        soigner(perso, cible);
+    int soin = 30; // ou soigneur->agilite * 2 selon ton choix
+    cible->PV += soin;
+    
+    if (cible->PV > cible->PV_max) {
+        cible->PV = cible->PV_max;
     }
 
-    perso->competence.tours_recharge = 2;
+    printf("%s prepare une boisson magique pour %s (+%d PV) !\n", 
+           soigneur->nom, cible->nom, soin);
 }
+void utiliser_competence(Personnage *perso, Personnage equipe[], int taille, Personnage *cible) {
+    if (perso->competence.tours_recharge > 0) {
+        printf("%s doit encore attendre %d tours!\n",
+              perso->nom, perso->competence.tours_recharge);
+        return;
+    }
+
+    switch(perso->competence.type) {
+        case 1: // Double attaque
+            double_attaque(perso, cible);
+            break;
+
+        case 2: // Bouclier
+            bouclier_equipe(perso, equipe, taille);
+            // On active le bouclier pour la dur�e sp�cifi�e
+            for (int i = 0; i < taille; i++) {
+                if (&equipe[i] != perso) {
+                    equipe[i].bouclier_actif = perso->competence.duree;
+                }
+            }
+            break;
+
+        case 3: // Soin
+            boisson_magique(perso, cible);
+            break;
+    }
+
+    perso->competence.tours_recharge = 2; // Recharge fix�e � 2 tours
+}
+
