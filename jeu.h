@@ -7,3 +7,4 @@ void jouer_tour(Personnage equipe1[], int taille1, Personnage equipe2[], int tai
 
 Personnage* jouer_partie(Personnage equipe1[], int taille1, Personnage equipe2[], int taille2);
   
+#endif
