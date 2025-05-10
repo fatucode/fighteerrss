@@ -3,28 +3,6 @@
 #include <string.h>
 #include "personnage.h"
 
-typedef struct {
-    char nom[50];               // Nom de la technique spéciale
-    int type;                   // 0 = aucune, 1 = double attaque, 2 = bouclier, 3 = boisson magique
-    int duree;                  // Nombre de tours pendant lesquels l’effet est actif
-    int tours_recharge;         // 0 = non, 1 = oui
-} TechniqueSpeciale;
-
-typedef struct {
-    char nom[50];
-    char type[20];              // type doit être un tableau de char, pas un int
-    int PV_max;
-    int PV;
-    int attaque;
-    int defense;
-    int agilite;
-    int vitesse;
-    int bouclier_actif;
-    TechniqueSpeciale competence;
-    int nb_techniques;
-    int nb_effets;
-} Personnage;
-
 Personnage creerPersonnage(const char *nom, const char *type) {
     Personnage p;
     strcpy(p.nom, nom);
