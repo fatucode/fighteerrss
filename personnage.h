@@ -3,6 +3,17 @@
 #define PERSONNAGE_H
 
 // Définition de la structure Ninja
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char nom[50];
+    int type;
+    int duree;
+    int tours_recharge;
+} TechniqueSpeciale;
+
 typedef struct {
     char nom[50];
     char type[20];
@@ -10,15 +21,14 @@ typedef struct {
     int PV;
     int attaque;
     int defense;
-    int vitesse;
     int agilite;
+    int vitesse;
+    int bouclier_actif;
+    TechniqueSpeciale competence;
     int nb_techniques;
     int nb_effets;
-    // Effet temporaire (ex. : bouclier ou soin actif pour ce tour)
-    int bouclier_actif;   // 1 si actif, 0 sinon
-    int soin_ameliore;    // 1 si effet boisson magique actif
-} Ninja;
-} Ninja;
+} Personnage;
+
 
 // Déclarations des fonctions
 Ninja creerPersonnage(const char *nom, const char *type);
