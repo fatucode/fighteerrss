@@ -2,7 +2,7 @@
 #ifndef PERSONNAGE_H
 #define PERSONNAGE_H
 
-// Définition de la structure Ninja
+// D�finition de la structure Ninja
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,10 +30,10 @@ typedef struct {
 } Personnage;
 
 
-// Déclarations des fonctions
-Ninja creerPersonnage(const char *nom, const char *type);
-void afficherPersonnage(Ninja p);
-int est_vivant(Ninja p);
-Ninja saisirPersonnage();  // Fonction pour saisir un personnage
+// D�clarations des fonctions
+Personnage creerPersonnage(const char *nom, const char *type);
+Personnage saisirPersonnage();
+void afficherPersonnage(Personnage p);
+// Fonction pour saisir un personnage
 
 #endif
