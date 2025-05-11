@@ -10,21 +10,30 @@
 
 int main() {
     printf("=== NINJA COMBAT ===\n\n");
-
-    Personnage equipe1[3], equipe2[3];
-
-    // Équipe joueur
-    printf("\n=== Composition équipe joueur ===\n");
-    equipe1[0] = choisirPersoParType("combattants.txt", "attaquant");
-    equipe1[1] = choisirPersoParType("combattants.txt", "defenseur");
-    equipe1[2] = choisirPersoParType("combattants.txt", "guerisseur");
-
-    // Équipe ennemie aléatoire
-    genererEquipeEnnemie(equipe2, "combattants.txt");
-
-    // Combat
+    
+    // Création des équipes
+    Personnage equipe1[3];
+    Personnage equipe2[3];
+    
+    printf("-- Creation equipe 1 --\n");
+    for (int i = 0; i < 3; i++) {
+        printf("\nPersonnage %d :\n", i+1);
+        equipe1[i] = saisirPersonnage();
+    }
+    
+    printf("\n-- Creation equipe 2 --\n");
+    for (int i = 0; i < 3; i++) {
+        printf("\nPersonnage %d :\n", i+1);
+        equipe2[i] = saisirPersonnage();
+    }
+    
+    // Début du jeu
     Personnage* vainqueurs = jouer_partie(equipe1, 3, equipe2, 3);
-    printf("\n=== L'équipe de %s a gagné ! ===\n", vainqueurs[0].nom);
-
+    
+    // Résultat
+    printf("\n=== L'equipe de %s a gagne ! ===\n", vainqueurs[0].nom);
+    
     return 0;
+    
 }
+    
