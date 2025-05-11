@@ -1,11 +1,1 @@
-// Attaquants  
-Shiro;attaquant;30;10;20;15;Double Lame;1;0  
-Kage;attaquant;35;5;25;10;Double Lame;1;0  
 
-// Défenseurs  
-Tetsu;defenseur;15;30;10;10;Bouclier Sacré;2;1  
-Golem;defenseur;10;35;5;15;Bouclier Sacré;2;2  
-
-// Guérisseurs  
-Mizu;guerisseur;10;15;15;20;Soin Céleste;3;0  
-Herboris;guerisseur;8;20;12;18;Soin Céleste;3;0  
