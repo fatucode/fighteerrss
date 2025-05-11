@@ -3,59 +3,84 @@
 #include <stdio.h>
 #include"personnage.h"
 
+#define RED     "\033[1;31m"
+#define GREEN   "\033[1;32m"
+#define BLUE    "\033[1;34m"
+#define GREY    "\033[0;37m"
+#define RESET   "\033[0m"
+
 void afficher_equipes(Personnage equipe1[], int taille1, Personnage equipe2[], int taille2) {
-    // En-tête stylisé
     printf("\n┌───────────────────────────────────┐");
-    printf("\n│           ÉQUIPE 1   │");
+    printf("\n│           ÉQUIPE 1               │");
     printf("\n└───────────────────────────────────┘");
-    
+
     for (int i = 0; i < taille1; i++) {
+        char *emoji_type = "❓";
+        char *couleur = GREY;
+
+        if (strcmp(equipe1[i].type, "attaquant") == 0) {
+            emoji_type = "🗡️";
+            couleur = RED;
+        } else if (strcmp(equipe1[i].type, "defenseur") == 0) {
+            emoji_type = "🛡️";
+            couleur = BLUE;
+        } else if (strcmp(equipe1[i].type, "guerisseur") == 0) {
+            emoji_type = "✨";
+            couleur = GREEN;
+        }
+
         printf("\n");
         if (equipe1[i].PV <= 0) {
-            printf("☠️  [K.O.] %-15s", equipe1[i].nom);
+            printf("☠️  %s [K.O.] %s%-15s%s", emoji_type, couleur, equipe1[i].nom, RESET);
         } else {
-            // Barre de vie visuelle
             int bar_length = 20;
             int current_hp = (equipe1[i].PV * bar_length) / equipe1[i].PV_max;
-            
-            printf("❤️  %-15s ", equipe1[i].nom);
-            printf("[");
+
+            printf("%s %s%-15s%s [", emoji_type, couleur, equipe1[i].nom, RESET);
             for (int j = 0; j < current_hp; j++) printf("█");
             for (int j = current_hp; j < bar_length; j++) printf(" ");
             printf("] %3d/%-3d", equipe1[i].PV, equipe1[i].PV_max);
-            
-            // Affichage des effets
-            if (equipe1[i].bouclier_actif > 0) {
+
+            if (equipe1[i].bouclier_actif > 0)
                 printf(" 🛡️×%d", equipe1[i].bouclier_actif);
-            }
-            if (equipe1[i].competence.tours_recharge > 0) {
+            if (equipe1[i].competence.tours_recharge > 0)
                 printf(" ⏳%d", equipe1[i].competence.tours_recharge);
-            }
         }
     }
 
-    // Séparation visuelle
     printf("\n\n┌───────────────────────────────────┐");
-    printf("\n│          ÉQUIPE 2                   │");
+    printf("\n│           ÉQUIPE 2               │");
     printf("\n└───────────────────────────────────┘");
-    
+
     for (int i = 0; i < taille2; i++) {
+        char *emoji_type = "❓";
+        char *couleur = GREY;
+
+        if (strcmp(equipe2[i].type, "attaquant") == 0) {
+            emoji_type = "🗡️";
+            couleur = RED;
+        } else if (strcmp(equipe2[i].type, "defenseur") == 0) {
+            emoji_type = "🛡️";
+            couleur = BLUE;
+        } else if (strcmp(equipe2[i].type, "guerisseur") == 0) {
+            emoji_type = "✨";
+            couleur = GREEN;
+        }
+
         printf("\n");
         if (equipe2[i].PV <= 0) {
-            printf("☠️  [K.O.] %-15s", equipe2[i].nom);
+            printf("☠️  %s [K.O.] %s%-15s%s", emoji_type, couleur, equipe2[i].nom, RESET);
         } else {
             int bar_length = 20;
             int current_hp = (equipe2[i].PV * bar_length) / equipe2[i].PV_max;
-            
-            printf("💀  %-15s ", equipe2[i].nom);
-            printf("[");
+
+            printf("%s %s%-15s%s [", emoji_type, couleur, equipe2[i].nom, RESET);
             for (int j = 0; j < current_hp; j++) printf("█");
             for (int j = current_hp; j < bar_length; j++) printf(" ");
             printf("] %3d/%-3d", equipe2[i].PV, equipe2[i].PV_max);
-            
-            if (equipe2[i].bouclier_actif > 0) {
+
+            if (equipe2[i].bouclier_actif > 0)
                 printf(" 🛡️×%d", equipe2[i].bouclier_actif);
-            }
         }
     }
     printf("\n");
@@ -141,46 +166,73 @@ void jouer_tour(Personnage equipe1[], int taille1, Personnage equipe2[], int tai
                 printf("\033[0m");
                 break;
                 
-            case 3:
+                       case 3:
                 printf("\n\033[1;32mAlliés à soigner :\033[0m\n");
+                int alliés_valides[taille1];
+                int nb_alliés = 0;
+
                 for (int j = 0; j < taille1; j++) {
                     if (equipe1[j].PV > 0 && j != i) {
-                        printf("%d. %s : ", j+1, equipe1[j].nom);
+                        printf("%d. %s : ", nb_alliés + 1, equipe1[j].nom);
                         afficherPV(equipe1[j]);
+                        alliés_valides[nb_alliés] = j;
+                        nb_alliés++;
                     }
                 }
+
                 int choix_allie;
-                scanf("%d", &choix_allie);
+                do {
+                    printf("\n\033[1;34mChoisissez un allié à soigner (1-%d) : \033[0m", nb_alliés);
+                    if (scanf("%d", &choix_allie) != 1 || choix_allie < 1 || choix_allie > nb_alliés) {
+                        printf("\033[1;31m❌ Choix invalide.\033[0m\n");
+                        while(getchar() != '\n');
+                    }
+                } while(choix_allie < 1 || choix_allie > nb_alliés);
+
                 printf("\033[1;32m");
-                soigner(&equipe1[i], &equipe1[choix_allie-1]);
+                soigner(&equipe1[i], &equipe1[alliés_valides[choix_allie - 1]]);
                 printf("\033[0m");
                 break;
-        }
-
-        if (cible->PV <= 0) {
+        if (cible->PV <= 0 && choix_action != 3) {
             printf("\n\033[1;31m💀 %s EST K.O. ! 💀\033[0m\n", cible->nom);
-        }
-    }
 }
 
+
+// Fonction de fin de tour : mise à jour des effets temporaires
 void fin_tour(Personnage equipe[], int taille) {
     for (int i = 0; i < taille; i++) {
-        // Gestion bouclier
+        if (equipe[i].PV <= 0) continue; // Ne rien faire pour les personnages morts
+
+        // Gestion du bouclier
         if (equipe[i].bouclier_actif > 0) {
-            equipe[i].bouclier_actif--;  // Décrémente le compteur
-            
+            equipe[i].bouclier_actif--;
             if (equipe[i].bouclier_actif == 0) {
                 printf("\n🔮 Le bouclier de %s disparaît.\n", equipe[i].nom);
             }
         }
 
-        // Gestion recharge compétences
+        // Gestion de la recharge des compétences
         if (equipe[i].competence.tours_recharge > 0) {
             equipe[i].competence.tours_recharge--;
         }
     }
 }
 Personnage* jouer_partie(Personnage equipe1[], int taille1, Personnage equipe2[], int taille2) {
+    if (equipe1 == NULL || equipe2 == NULL || taille1 <= 0 || taille2 <= 0) {
+        fprintf(stderr, "Erreur : équipes invalides.\n");
+        return NULL;
+    }
+
+    // Réinitialisation des effets temporaires au début de la partie
+    for (int i = 0; i < taille1; i++) {
+        equipe1[i].bouclier_actif = 0;
+        equipe1[i].competence.tours_recharge = 0;
+    }
+    for (int i = 0; i < taille2; i++) {
+        equipe2[i].bouclier_actif = 0;
+        equipe2[i].competence.tours_recharge = 0;
+    }
+
     int tour = 1;
     const int TOURS_MAX = 20;
 
@@ -189,13 +241,13 @@ Personnage* jouer_partie(Personnage equipe1[], int taille1, Personnage equipe2[]
         printf("\n            TOUR %d", tour);
         printf("\n═══════════════════════════════════\n");
 
-        // Tour équipe 1
+        // Tour de l'équipe 1
         printf("\n▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄");
         printf("\n█ JOUEUR - C'EST À VOUS ! █");
         printf("\n▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀\n");
         jouer_tour(equipe1, taille1, equipe2, taille2);
 
-        // Vérifier si équipe 2 a perdu
+        // Vérifie si l'équipe 2 est éliminée
         int equipe2_vivante = 0;
         for (int i = 0; i < taille2; i++) {
             if (equipe2[i].PV > 0) {
@@ -208,13 +260,13 @@ Personnage* jouer_partie(Personnage equipe1[], int taille1, Personnage equipe2[]
             return equipe1;
         }
 
-        // Tour équipe 2
+        // Tour de l'équipe 2
         printf("\n▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄");
         printf("\n█  ADVERSAIRE - SON TOUR  █");
         printf("\n▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀\n");
         jouer_tour(equipe2, taille2, equipe1, taille1);
 
-        // Vérifier si équipe 1 a perdu
+        // Vérifie si l'équipe 1 est éliminée
         int equipe1_vivante = 0;
         for (int i = 0; i < taille1; i++) {
             if (equipe1[i].PV > 0) {
@@ -227,7 +279,7 @@ Personnage* jouer_partie(Personnage equipe1[], int taille1, Personnage equipe2[]
             return equipe2;
         }
 
-        // Fin de tour : mise à jour des effets temporaires
+        // Mise à jour des effets temporaires à la fin du tour
         fin_tour(equipe1, taille1);
         fin_tour(equipe2, taille2);
 
@@ -236,5 +288,4 @@ Personnage* jouer_partie(Personnage equipe1[], int taille1, Personnage equipe2[]
 
     printf("\n🕛🕛🕛 LIMITE DE TOURS ATTEINTE - MATCH NUL ! 🕛🕛🕛\n");
     return NULL;
-   
 }
