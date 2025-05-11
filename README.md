@@ -1,4 +1,4 @@
-# fighteerrssRègles du Jeu de Combat en ™ Terminal
+# fighteerrssRègles du Jeu de Combat 
 
 🎮 Objectif
 
