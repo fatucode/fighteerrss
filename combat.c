@@ -4,147 +4,214 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdbool.h>
 
 /**
- * Effectue une attaque entre deux personnages avec possibilité de coup critique ou esquive.
- * @param attaquant Le personnage qui attaque.
- * @param cible Le personnage ciblé.
+ * @brief Effectue une attaque entre deux personnages avec gestion des critiques et esquives
+ * @param attaquant Pointeur vers le personnage attaquant
+ * @param cible Pointeur vers le personnage cible
+ * 
+ * @details Cette fonction gère :
+ * - La vérification des personnages valides
+ * - Le calcul de chance d'esquive basé sur l'agilité
+ * - Les coups critiques aléatoires (10% de chance)
+ * - La réduction des dégâts par les boucliers
+ * - L'application des dégâts avec limites
  */
 void attaquer(Personnage *attaquant, Personnage *cible) {
-    // Coup critique (5%)
-    if (rand() % 100 < 5) {
-        int degats = attaquant->attaque * 2 - (cible->defense / 2);
-        printf("\033[1;33m");
-        printf("💥 CRITIQUE ! %s écrase %s pour %d dégâts !\n", attaquant->nom, cible->nom, degats);
-        printf("\033[0m");
-        cible->PV -= degats;
+    // Vérification des paramètres d'entrée
+    if (attaquant == NULL || cible == NULL || attaquant->PV <= 0 || cible->PV <= 0) {
         return;
     }
 
-    // Esquive
-    if (rand() % 100 < cible->agilite) {
-        printf("\033[1;36m");
-        printf("🍃 %s esquive avec grâce !\n", cible->nom);
-        printf("\033[0m");
+    // 1. Gestion de l'esquive
+    if (cible->agilite > attaquant->agilite && (rand() % 100) < (cible->agilite - attaquant->agilite)) {
+        printf("✨ %s esquive l'attaque de %s !\n", cible->nom, attaquant->nom);
         return;
     }
 
-    // Attaque normale
-    int degats = attaquant->attaque - (cible->defense / 2);
+    // 2. Calcul des dégâts de base
+    int degats = attaquant->attaque - (cible->defense / 3);
+    
+    // 3. Gestion des coups critiques (10% de chance)
+    if ((rand() % 10) == 0) {
+        degats *= 2;
+        printf("💥 COUP CRITIQUE ! ");
+    }
+
+    // 4. Réduction des dégâts par bouclier (-30%)
     if (cible->bouclier_actif > 0) {
-        degats /= 2;
-        printf("🛡️ Bouclier actif ! Dégâts réduits à %d\n", degats);
+        degats = (degats * 70) / 100;
+        printf("🛡️ Bouclier actif (-30%%) | ");
     }
+
+    // 5. Limitation des dégâts entre 1 et PV max
+    degats = (degats < 1) ? 1 : (degats > cible->PV_max) ? cible->PV_max : degats;
+
+    // Application des dégâts
     cible->PV -= degats;
-    printf("%s inflige %d dégâts à %s !\n", attaquant->nom, degats, cible->nom);
+    printf("%s attaque %s : -%d PV | PV restants: %d/%d\n", 
+           attaquant->nom, cible->nom, degats, cible->PV, cible->PV_max);
+
+    // Gestion du KO
+    if (cible->PV <= 0) {
+        printf("💀 %s est mis K.O. !\n", cible->nom);
+    }
 }
 
 /**
- * Soigne un allié avec un personnage de type "guerisseur".
- * @param guerisseur Le personnage qui soigne.
- * @param cible La cible à soigner.
+ * @brief Effectue un soin sur un personnage cible
+ * @param guerisseur Pointeur vers le personnage soignant
+ * @param cible Pointeur vers le personnage à soigner
+ * 
+ * @details Contrôles effectués :
+ * - Validité des pointeurs
+ * - Vérification que le soigneur est bien un guérisseur
+ * - Vérification que la cible n'est pas morte
+ * - Empêche l'auto-soin
  */
 void soigner(Personnage *guerisseur, Personnage *cible) {
+    // Vérifications préalables
     if (!guerisseur || !cible) {
-        printf("Erreur : guérisseur ou cible invalide.\n");
+        printf("Erreur : personnage(s) invalide(s).\n");
         return;
     }
+    
     if (strcmp(guerisseur->type, "guerisseur") != 0) {
-        printf("%s n'est pas un guérisseur !\n", guerisseur->nom);
+        printf("%s n'a pas la compétence de soin !\n", guerisseur->nom);
         return;
     }
+    
     if (cible->PV <= 0) {
-        printf("%s est mort et ne peut pas être soigné.\n", cible->nom);
+        printf("%s est mort et ne peut être soigné.\n", cible->nom);
         return;
     }
+    
     if (guerisseur == cible) {
         printf("%s ne peut pas se soigner lui-même.\n", guerisseur->nom);
         return;
     }
 
+    // Calcul et application du soin
     int soin = guerisseur->agilite * 2;
-    cible->PV += soin;
-    if (cible->PV > cible->PV_max) cible->PV = cible->PV_max;
-
-    printf("%s soigne %s pour %d PV !\n", guerisseur->nom, cible->nom, soin);
+    cible->PV = (cible->PV + soin > cible->PV_max) ? cible->PV_max : cible->PV + soin;
+    
+    printf("%s soigne %s : +%d PV | PV: %d/%d\n", 
+           guerisseur->nom, cible->nom, soin, cible->PV, cible->PV_max);
 }
 
 /**
- * Effectue une double attaque sur une cible.
- * @param attaquant Le personnage attaquant.
- * @param cible La cible visée.
+ * @brief Effectue une double attaque (compétence spéciale)
+ * @param attaquant Pointeur vers le personnage attaquant
+ * @param cible Pointeur vers la cible
  */
 void double_attaque(Personnage *attaquant, Personnage *cible) {
+    printf("%s utilise DOUBLE ATTAQUE !\n", attaquant->nom);
+    
     for (int i = 1; i <= 2; i++) {
         int degats = attaquant->attaque - (cible->defense / 2);
-        if (degats < 1) degats = 1;
+        degats = (degats < 1) ? 1 : degats;  // Dégâts minimum de 1
+        
         cible->PV -= degats;
-        printf("%s attaque %s pour %d dégâts (%dème attaque)\n", attaquant->nom, cible->nom, degats, i);
+        printf("Attaque %d : %s → %s (-%d PV)\n", 
+               i, attaquant->nom, cible->nom, degats);
     }
+    
+    // Correction PV négatifs
     if (cible->PV < 0) cible->PV = 0;
 }
 
 /**
- * Applique un bouclier temporaire à toute l'équipe sauf au lanceur.
- * @param defenseur Le personnage qui applique le bouclier.
- * @param equipe Tableau contenant l'équipe.
- * @param taille Taille de l'équipe.
+ * @brief Active un bouclier pour toute l'équipe (compétence spéciale)
+ * @param defenseur Pointeur vers le personnage défenseur
+ * @param equipe Tableau des personnages de l'équipe
+ * @param taille Nombre de personnages dans l'équipe
  */
 void bouclier_equipe(Personnage *defenseur, Personnage equipe[], int taille) {
-    printf("\n✨ %s invoque un BOUCLIER DIVIN (2 tours) !\n", defenseur->nom);
+    printf("\n✨ %s active BOUCLIER D'EQUIPE (2 tours) !\n", defenseur->nom);
+    
     for (int i = 0; i < taille; i++) {
-        if (strcmp(equipe[i].nom, defenseur->nom) != 0){
+        if (&equipe[i] != defenseur) {  // Ne s'applique pas au lanceur
             equipe[i].bouclier_actif = 2;
-            printf("-> %s est protégé (%d/2 tours)\n", equipe[i].nom, equipe[i].bouclier_actif);
+            printf("-> %s bénéficie du bouclier\n", equipe[i].nom);
         }
     }
 }
 
 /**
- * Soigne un allié via une boisson magique (compétence spéciale).
- * @param soigneur Le personnage soignant.
- * @param cible Le personnage à soigner.
+ * @brief Ressuscite un membre de l'équipe (compétence spéciale)
+ * @param guerisseur Pointeur vers le personnage guérisseur
+ * @param equipe Tableau des personnages de l'équipe
+ * @param taille Nombre de personnages dans l'équipe
+ * @return bool true si résurrection réussie, false sinon
  */
-void boisson_magique(Personnage* soigneur, Personnage* cible) {
-    if (strcmp(soigneur->type, "guerisseur") != 0) {
-        printf("%s n'est pas un guerisseur !\n", soigneur->nom);
-        return;
+bool ressusciter(Personnage *guerisseur, Personnage equipe[], int taille) {
+    int morts[taille];
+    int nb_morts = 0;
+
+    for (int i = 0; i < taille; i++) {
+        if (equipe[i].PV <= 0) {
+            morts[nb_morts++] = i;
+        }
     }
-    int soin = 30;
-    cible->PV += soin;
-    if (cible->PV > cible->PV_max) cible->PV = cible->PV_max;
-    printf("%s prépare une boisson magique pour %s (+%d PV) !\n", soigneur->nom, cible->nom, soin);
+
+    if (nb_morts == 0) {
+        printf("\nℹ️ Aucun allié à ressusciter.\n");
+        return false;
+    }
+
+    printf("\n🧟 Alliés K.O. :\n");
+    for (int i = 0; i < nb_morts; i++) {
+        printf("%d. %s\n", i + 1, equipe[morts[i]].nom);
+    }
+
+    int choix;
+    do {
+        printf("\nChoix du personnage à ressusciter (1-%d) : ", nb_morts);
+        if (scanf("%d", &choix) != 1) {
+            printf("❌ Entrée invalide.\n");
+            while(getchar() != '\n');
+        }
+    } while (choix < 1 || choix > nb_morts);
+
+    int index = morts[choix - 1];
+    equipe[index].PV = equipe[index].PV_max / 2;
+    printf("\n💖 %s ressuscite %s !\n", guerisseur->nom, equipe[index].nom);
+    
+    return true;
 }
 
 /**
- * Utilise la compétence spéciale d'un personnage (attaque, soin, bouclier).
- * @param perso Personnage utilisant la compétence.
- * @param equipe Équipe alliée du personnage.
- * @param taille Taille de l'équipe.
- * @param cible La cible visée par la compétence.
+ * @brief Utilise la compétence spéciale d'un personnage
+ * @param perso Pointeur vers le personnage
+ * @param equipe Tableau de l'équipe alliée
+ * @param taille Taille de l'équipe
+ * @param cible Pointeur vers la cible (si applicable)
  */
 void utiliser_competence(Personnage *perso, Personnage equipe[], int taille, Personnage *cible) {
-    if (!perso || !equipe || !cible) {
-        printf("Erreur : pointeur nul détecté dans utiliser_competence.\n");
-        return;
-    }
-
     if (perso->competence.tours_recharge > 0) {
-        printf("%s doit encore attendre %d tours!\n", perso->nom, perso->competence.tours_recharge);
+        printf("%s doit attendre %d tour(s) avant de réutiliser sa compétence.\n",
+               perso->nom, perso->competence.tours_recharge);
         return;
     }
-
-    printf("✨ %s utilise sa compétence spéciale !\n", perso->nom);
 
     switch(perso->competence.type) {
-        case 1:
+        case 1:  // Attaquant
             double_attaque(perso, cible);
             break;
-        case 2:
+            
+        case 2:  // Défenseur
             bouclier_equipe(perso, equipe, taille);
             break;
-        case 3:
-            boisson_magique(perso, cible);
+            
+        case 3:  // Guérisseur - Résurrection
+            if (perso->competence.nb_resurrections <= 0) {
+            printf("\n⚠️ %s a épuisé ses résurrections !\n", perso->nom);
+            return;
+            }
+            if (ressusciter(perso, equipe, taille)) {
+             perso->competence.nb_resurrections--;
+                }
             break;
     }
 
