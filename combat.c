@@ -124,10 +124,17 @@ void boisson_magique(Personnage* soigneur, Personnage* cible) {
  * @param cible La cible visée par la compétence.
  */
 void utiliser_competence(Personnage *perso, Personnage equipe[], int taille, Personnage *cible) {
+    if (!perso || !equipe || !cible) {
+        printf("Erreur : pointeur nul détecté dans utiliser_competence.\n");
+        return;
+    }
+
     if (perso->competence.tours_recharge > 0) {
         printf("%s doit encore attendre %d tours!\n", perso->nom, perso->competence.tours_recharge);
         return;
     }
+
+    printf("✨ %s utilise sa compétence spéciale !\n", perso->nom);
 
     switch(perso->competence.type) {
         case 1:
