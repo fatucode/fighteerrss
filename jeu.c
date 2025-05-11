@@ -6,7 +6,7 @@
 void afficher_equipes(Personnage equipe1[], int taille1, Personnage equipe2[], int taille2) {
     // En-tête stylisé
     printf("\n┌───────────────────────────────────┐");
-    printf("\n│           ÉQUIPE JOUEUR           │");
+    printf("\n│           ÉQUIPE 1   │");
     printf("\n└───────────────────────────────────┘");
     
     for (int i = 0; i < taille1; i++) {
@@ -36,7 +36,7 @@ void afficher_equipes(Personnage equipe1[], int taille1, Personnage equipe2[], i
 
     // Séparation visuelle
     printf("\n\n┌───────────────────────────────────┐");
-    printf("\n│          ÉQUIPE ENNEMIE           │");
+    printf("\n│          ÉQUIPE 2                   │");
     printf("\n└───────────────────────────────────┘");
     
     for (int i = 0; i < taille2; i++) {
