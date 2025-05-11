@@ -18,7 +18,7 @@ typedef struct {
     int nb_techniques;
     int nb_effets;
     
-    struct {
+typedef struct {
         char nom[50];
         int type;       // 1=Attaque, 2=Bouclier, 3=Soin
         int duree;
