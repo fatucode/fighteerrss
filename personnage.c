@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 Personnage creerPersonnage(const char *nom, const char *type) {
     Personnage p;
     strcpy(p.nom, nom);
