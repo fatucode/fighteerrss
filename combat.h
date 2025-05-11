@@ -5,7 +5,7 @@
 
 void utiliser_competence(Personnage* utilisateur, Personnage equipe[], int taille, Personnage* cible);
 void attaquer(Personnage* attaquant, Personnage* cible);
-void soigner(Personnage* soigneur, Personnage* cible
+void soigner(Personnage* soigneur, Personnage* cible);
 void double_attaque(Personnage *attaquant, Personnage *cible);
 void bouclier_equipe(Personnage *defenseur, Personnage equipe[], int taille);
 void boisson_magique(Personnage* soigneur, Personnage* cible);
