@@ -18,23 +18,16 @@ typedef struct {
     int nb_techniques;
     int nb_effets;
     
-typedef struct {
+struct {
         char nom[50];
         int type;       // 1=Attaque, 2=Bouclier, 3=Soin
         int duree;
         int tours_recharge;
     } competence;
 } Personnage;
-
-// Chargement depuis fichier
-Personnage chargerCombattant(const char* filename, int id);
-
-// Affichage
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+Personnage creerPersonnage(const char *nom, const char *type) ;
+Personnage saisirPersonnage() ;
 void afficherPersonnage(Personnage p);
-void afficherPV(Personnage p);
-
-// Sélection interactive
-Personnage choisirPersoParType(const char* filename, const char* type);
-void genererEquipeEnnemie(Personnage equipe[], const char* filename);
-
-#endif
