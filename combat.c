@@ -93,7 +93,7 @@ void double_attaque(Personnage *attaquant, Personnage *cible) {
 void bouclier_equipe(Personnage *defenseur, Personnage equipe[], int taille) {
     printf("\n✨ %s invoque un BOUCLIER DIVIN (2 tours) !\n", defenseur->nom);
     for (int i = 0; i < taille; i++) {
-        if (&equipe[i] != defenseur) {
+        if (strcmp(equipe[i].nom, defenseur->nom) != 0){
             equipe[i].bouclier_actif = 2;
             printf("-> %s est protégé (%d/2 tours)\n", equipe[i].nom, equipe[i].bouclier_actif);
         }
