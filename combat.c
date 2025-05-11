@@ -2,14 +2,29 @@
 #include "jeu.h"
 #include <stdio.h>
 void attaquer(Personnage *attaquant, Personnage *cible) {
-    int degats = (attaquant->attaque * (10 + attaquant->agilite)) / (10 + cible->defense);
-
-    if (cible->bouclier_actif) {
-        degats /= 2;
-        printf("Bouclier activ� ! ");
+    void attaquer(Personnage *attaquant, Personnage *cible) {
+    // Coup critique (5% de chance)
+    if (rand() % 100 < 5) {
+        int degats = attaquant->attaque * 2 - (cible->defense / 2);
+        printf("\033[1;33m"); // Jaune
+        printf("💥 CRITIQUE ! %s écrase %s pour %d dégâts !\n", attaquant->nom, cible->nom, degats);
+        printf("\033[0m");
+    } 
+    // Esquive (agilité)
+    else if (rand() % 100 < cible->agilite) {
+        printf("\033[1;36m"); // Cyan
+        printf("🍃 %s esquive avec grâce !\n", cible->nom);
+        printf("\033[0m");
+    } 
+    // Attaque normale
+    else if {
+    int degats = attaquant->attaque - (cible->defense / 2);  // Exemple de calcul
+    
+    if (cible->bouclier_actif > 0) {
+        degats = degats / 2;  // Réduction de 50%
+        printf("🛡️ Bouclier actif ! Dégâts réduits à %d\n", degats);
     }
 
-    degats = (degats < 1) ? 1 : degats;
     cible->PV -= degats;
 
     printf("%s inflige %d d�g�ts � %s !\n", attaquant->nom, degats, cible->nom);
@@ -59,14 +74,15 @@ void double_attaque(Personnage *attaquant, Personnage *cible) {
 }
 
 void bouclier_equipe(Personnage *defenseur, Personnage equipe[], int taille) {
-    printf("%s active un bouclier d'equipe !\n", defenseur->nom);
+    printf("\n✨ %s invoque un BOUCLIER DIVIN (2 tours) !\n", defenseur->nom);
     for (int i = 0; i < taille; i++) {
-        if (&equipe[i] != defenseur) {
-            equipe[i].bouclier_actif = 1;
-            printf("%s est maintenant protege !\n", equipe[i].nom);
+        if (&equipe[i] != defenseur) {  // Ne s'applique pas au défenseur lui-même
+            equipe[i].bouclier_actif = 2;  // Durée = 2 tours
+            printf("-> %s est protégé (%d/2 tours)\n", equipe[i].nom, equipe[i].bouclier_actif);
         }
     }
 }
+
 void boisson_magique(Personnage* soigneur, Personnage* cible) {
     if (strcmp(soigneur->type, "guerisseur") != 0) {
         printf("%s n'est pas un guerisseur !\n", soigneur->nom);
@@ -111,4 +127,3 @@ void utiliser_competence(Personnage *perso, Personnage equipe[], int taille, Per
     // Mise en place de la recharge de la compétence
     perso->competence.tours_recharge = 2; // Recharge fixée à 2 tours
 }
-
