@@ -1,22 +1,13 @@
-
 #ifndef PERSONNAGE_H
 #define PERSONNAGE_H
 
-// D�finition de la structure Ninja
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 typedef struct {
     char nom[50];
-    int type;
-    int duree;
-    int tours_recharge;
-} TechniqueSpeciale;
-
-typedef struct {
-    char nom[50];
-    char type[20];
+    char type[20];  // "attaquant", "defenseur", "guerisseur"
     int PV_max;
     int PV;
     int attaque;
@@ -24,16 +15,26 @@ typedef struct {
     int agilite;
     int vitesse;
     int bouclier_actif;
-    TechniqueSpeciale competence;
     int nb_techniques;
     int nb_effets;
+    
+    struct {
+        char nom[50];
+        int type;       // 1=Attaque, 2=Bouclier, 3=Soin
+        int duree;
+        int tours_recharge;
+    } competence;
 } Personnage;
 
+// Chargement depuis fichier
+Personnage chargerCombattant(const char* filename, int id);
 
-// D�clarations des fonctions
-Personnage creerPersonnage(const char *nom, const char *type);
-Personnage saisirPersonnage();
+// Affichage
 void afficherPersonnage(Personnage p);
-// Fonction pour saisir un personnage
+void afficherPV(Personnage p);
+
+// Sélection interactive
+Personnage choisirPersoParType(const char* filename, const char* type);
+void genererEquipeEnnemie(Personnage equipe[], const char* filename);
 
 #endif
