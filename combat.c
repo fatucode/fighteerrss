@@ -206,14 +206,15 @@ void utiliser_competence(Personnage *perso, Personnage equipe[], int taille, Per
             
         case 3:  // Guérisseur - Résurrection
             if (perso->competence.nb_resurrections <= 0) {
-            printf("\n⚠️ %s a épuisé ses résurrections !\n", perso->nom);
-            return;
+                printf("\n⚠️ %s a épuisé ses résurrections !\n", perso->nom);
+                return;
             }
-            if (ressusciter(perso, equipe, taille)) {
-             perso->competence.nb_resurrections--;
-                }
+
+            // Gérer la résurrection
+            ressusciter(perso, equipe, taille);
+            perso->competence.nb_resurrections--;  // Réduire le nombre de résurrections
             break;
     }
 
-    perso->competence.tours_recharge = 2;
+    perso->competence.tours_recharge = 2;  // Définir le temps de recharge
 }
