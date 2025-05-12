@@ -169,10 +169,10 @@ void jouer_tour(Personnage equipe1[], int taille1, Personnage equipe2[], int tai
         
         // Options spécifiques aux guérisseurs
         if (strcmp(equipe1[i].type, "guerisseur") == 0) {
-            printf("\033[1;32m3. 💚 Soigner un allié\033[0m\n");
-            printf("\033[1;36m4. 🧬 Ressusciter un allié K.O.\033[0m (%d restantes)\n", 
-                equipe1[i].competence.tours_recharge);
-        }
+    		printf("\033[1;32m3. 💚 Soigner un allié\033[0m\n");
+    		
+}
+
 
         // Choix de l'action
         int choix_action;
@@ -219,7 +219,23 @@ void jouer_tour(Personnage equipe1[], int taille1, Personnage equipe2[], int tai
                 printf("Aucun allié à soigner!\n");
                 continue;
             }
-            
+       break ;
+      case 4:
+    		if (strcmp(equipe1[i].type, "guerisseur") == 0) {  // Vérifie si 	c'est un 		guérisseur
+        	printf(GREEN);
+        	if (equipe1[i].competence.nb_resurrections > 0) {
+            	if (ressusciter(&equipe1[i], equipe1, taille1)) {
+                // La résurrection est réussie
+                equipe1[i].competence.nb_resurrections--;
+            }
+        	} else {
+            printf(RED "⚠️ %s n'a plus de résurrections disponibles !\n" RESET, 		equipe1[i].nom);
+        	}
+        	printf(RESET);
+    }
+    break;
+
+
             int choix_allie;
             do {
                 printf("\n" BLUE "Choisissez un allié à soigner (1-%d) : " RESET, nb_allies);
