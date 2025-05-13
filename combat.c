@@ -72,7 +72,7 @@ void attaquer(Personnage *attaquant, Personnage *cible) {
  */
 void soigner(Personnage *guerisseur, Personnage *cible) {
     // Vérifications préalables
-    if (!guerisseur || !cible) {
+    if (guerisseur==NULL || cible==NULL) {
         printf("Erreur : personnage(s) invalide(s).\n");
         return;
     }
