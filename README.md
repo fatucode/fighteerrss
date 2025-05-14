@@ -26,6 +26,7 @@ Utiliser une compétence spéciale (attaque spéciale, bouclier, résurrection)
 
 (Guérisseur uniquement) Ressusciter un allié mis K.O (limite de 1 fois/partie)
 
+
 📊 Statistiques des combattants
 
 Chaque combattant possède des attributs influant sur le combat :
@@ -60,8 +61,5 @@ La partie se termine quand tous les membres d'une équipe sont K.O.
 Une limite de 20 tours est fixée pour éviter les parties infinies.
 
 
-Ajout de nouveaux effets spéciaux
-
-Buffs, debuffs, altérations d'état (poison, boost d'attaque, etc.)
 
  
